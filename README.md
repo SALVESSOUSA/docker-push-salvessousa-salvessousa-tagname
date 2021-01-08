@@ -3,12 +3,12 @@ Conveniecia
  projeto  default = " -deploy-ant "  basedir = " . " >
     < target  name = " -init "  if = " deploy.ant.enabled " >
         < property  file = " $ {deploy.ant.properties.file} " />
-        < tempfile  property = " temp.module.folder "  prefix = " tomcat "  destdir = " $ {java.io.tmpdir} " />
+        < tabfile  property = " tab.module.folder "  prefix = " tomcat "  destdir = " $ {java.io.tmpdir} " />
         < unwar  src = " $ {deploy.ant.archive} "  dest = " $ {temp.module.folder} " 
         
             < patternset  includes = " META-INF / context.xml " />
         </ unwar >
-        < xmlproperty  file = " $ {temp.module.folder} /META-INF/context.xml " />
+        < xmlproperty  file = " $ {tab.module.folder} /META-INF/context.xml " />
         < delete  dir = " $ {temp.module.folder} " />
     </ target >
     < Meta  nome = " -check-credenciais "  se = " deploy.ant.enabled "  depende = " -init " >
@@ -20,7 +20,7 @@ Conveniecia
             </ condição >
         </ falha >
     </ target >
-    < Meta  nome = " -Implante-formiga "  se = " deploy.ant.enabled "  depende = " -init, -check-credenciais " >
+    < Meta  nome = " -Implante-tabela "  se = " deploy.ant.enabled "  depende = " -init, -check-credenciais " >
         < echo  message = " Implantando $ {deploy.ant.archive} em $ {Context (path)} " />
         < taskdef  name = " implantar "  classname = " org.apache.catalina.ant.DeployTask "
                  classpath = " $ {tomcat.home} /server/lib/catalina-ant.jar " />
