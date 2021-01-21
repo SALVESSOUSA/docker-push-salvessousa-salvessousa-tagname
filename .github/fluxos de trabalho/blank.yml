@@ -1,0 +1,124 @@
+# This is a basic workflow to help you get started with Actions
+{ANTES | DEPOIS | AO INVÉS DE }
+{INSERT [OU] | ATUALIZAR [OU] | EXCLUIR}
+[OF nome_coluna]
+ON nome_tabela
+[REFERÊNCIA ANTIGO AS o NEW AS n]
+[PARA CADA LINHA]
+QUANDO (condição)
+DECLARAR
+CRIAR TABELA historico_preco_produto
+(número id do produto (5),
+produto_nome varchar2 (50),
+produto_descrição varchar2 (150),
+número do produto_preco_unitario (7,2));
+
+CRIAR TABELA produtos
+(número id do produto (5),
+produto_nome varchar2 (32),
+produto_descrição varchar2 (150),
+número do produto_preco_unitario (7,2));
+INSERIR EM produtos VALORES (1, 'leite', 'bebida nutritiva', '2,50');
+INSERT INTO produtos VALUES (2, 'carne bovina', 'musculo', '10,00 ');
+INSERIR EM produtos VALORES (3, 'ovos', 'item vendido por unidade',
+  ' 2,50 ' );
+INSERIR EM VALORES DE produtos (4, 'pão', '10 unidades ',' 3,50 ');
+INSERIR EM produtos VALORES (5, 'laranja', 'fruta rica em
+vitamina C, quantidade mínima 12 unidades ',' 5,00 ');
+INSERIR EM produtos VALORES (6, 'feijão', 'Alimento rico em ferro',
+  ' 4,50 ' );
+CREATE or REPLACE TRIGGER historico_preco_trigger
+ANTES DA ATUALIZAÇÃO DO prd_preco_unitario
+ON produtos
+PARA CADA LINHA
+INÍCIO
+INSERT INTO historico_preco_produto
+VALORES
+(: old.produto_id,
+ : old.produto_nome,
+ : old.produto_descricao,
+ : old.produto_preco_unitario);
+FIM;
+/
+ATUALIZAR CONJUNTO DE PRODUTOS produto_preco_unitario = 800
+   WHERE id_do_produto = 5;
+CRIAR TABELA produto_mensagem
+(Mensagem varchar2 (50),
+ Número de dados_corrente (32)
+);
+CREATE or REPLACE TRIGGER Before_Update_Stat_produto
+ANTES
+ATUALIZAÇÃO EM produtos
+Início
+INSERIR EM produto_mensagem
+Valores ('Antes da atualização, nível de instrução', sysdate);
+FIM;
+/
+CREATE or REPLACE TRIGGER Before_Upddate_Row_produto
+ANTES
+ATUALIZAÇÃO EM produtos
+PARA CADA LINHA
+INÍCIO
+INSERIR EM produto_mensagem
+Valores ('Antes de atualizar o nível de linha', sysdate);
+FIM;
+/
+CRIAR ou REPLACE TRIGGER After_Update_Stat_produto
+DEPOIS DE
+ATUALIZAÇÃO EM produtos
+INÍCIO
+INSERIR EM produto_mensagem
+Valores ('Após atualização, nível de instrução', sysdate);
+Fim;
+/
+CRIAR ou REPLACE TRIGGER After_Update_Row_produto
+DEPOIS DE
+inserir em produtos
+PARA CADA LINHA
+INÍCIO
+INSERIR EM produto_mensagem
+Valores ('Após atualização, nível de linha', sysdate);
+FIM;
+/
+ATUALIZAR CONJUNTO DE PRODUTOS produto_preco_unitario = 1200
+WHERE id_do_produto em (3,5);
+Declarações-declarações
+INÍCIO
+Declarações executáveis
+EXCEÇÃO
+Declarações de tratamento de exceções
+FIM;
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
